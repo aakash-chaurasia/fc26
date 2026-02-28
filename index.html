@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIFA 2026: Official Leaderboard</title>
+    <title>FIFA 2026: Group Stage Leaderboard</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root { --accent: #00d4ff; --gold: #ffc107; --bg: #0d0d0d; --card: #1a1a1a; --danger: #ff4444; --silver: #c0c0c0; --bronze: #cd7f32; --text: #e0e0e0; --bye: #28a745; }
+        :root { --accent: #00d4ff; --gold: #ffc107; --bg: #0d0d0d; --card: #1a1a1a; --danger: #ff4444; --silver: #c0c0c0; --text: #e0e0e0; --bye: #28a745; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
         
         /* SYNC OVERLAY */
@@ -29,71 +29,67 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        /* ROSTER STYLES */
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; max-width: 1200px; margin: auto; }
-        .team-row { background: #222; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent); transition: 0.3s; }
-        .dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #444; display: inline-block; }
-        .dot.used { background: var(--danger); border-color: var(--danger); }
-        .team-row.maxed { background: #181818; border-left-color: #444; opacity: 0.4; filter: grayscale(1); }
-        .team-row.maxed .team-name { text-decoration: line-through; color: #888; }
-
         /* LEADERBOARD TABLE */
-        .jumbo-container { max-width: 1100px; margin: auto; background: #000; border: 4px solid #333; border-radius: 20px; overflow: hidden; }
-        .jumbo-header { background: linear-gradient(90deg, #111, #222); padding: 20px; text-align: center; border-bottom: 2px solid #333; }
-        .jumbo-header h1 { margin: 0; color: var(--gold); text-transform: uppercase; letter-spacing: 5px; font-size: 2em; }
+        .group-container { max-width: 1000px; margin: 0 auto 40px auto; background: #000; border: 2px solid #333; border-radius: 15px; overflow: hidden; }
+        .group-header { background: #111; padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .group-header h2 { margin: 0; font-size: 1.2em; color: var(--accent); text-transform: uppercase; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 1.2em; }
-        th { background: #111; color: #666; padding: 15px; text-transform: uppercase; font-size: 0.7em; text-align: left; }
-        td { padding: 18px 15px; border-bottom: 1px solid #222; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #0a0a0a; color: #555; padding: 12px; font-size: 0.7em; text-transform: uppercase; text-align: left; }
+        td { padding: 15px 12px; border-bottom: 1px solid #1a1a1a; }
         
-        /* BADGES */
-        .badge { font-size: 0.6em; padding: 4px 8px; border-radius: 4px; font-weight: bold; margin-left: 10px; vertical-align: middle; }
+        .rank-col { width: 40px; text-align: center; font-weight: bold; }
+        .pts-col { font-weight: 900; color: var(--gold); text-align: center; background: rgba(255, 193, 7, 0.02); }
+        .stat-col { text-align: center; color: #777; width: 50px; font-size: 0.9em; }
+        
+        .badge { font-size: 0.6em; padding: 3px 6px; border-radius: 3px; font-weight: bold; margin-left: 8px; }
         .badge-bye { background: var(--bye); color: white; }
-        .badge-playoffs { background: var(--accent); color: black; }
 
-        .rank-col { width: 50px; text-align: center; font-weight: 900; }
-        .pts-col { font-weight: 900; color: var(--accent); text-align: center; }
-        .stat-col { text-align: center; color: #888; width: 60px; }
-        
-        tr.qualifier-top { background: rgba(40, 167, 69, 0.05); }
-        tr.qualifier-mid { background: rgba(0, 212, 255, 0.03); }
+        /* ROSTER TRACKER */
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; max-width: 1200px; margin: auto; }
+        .team-row { background: #1a1a1a; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent); }
+        .team-row.maxed { opacity: 0.3; filter: grayscale(1); border-left-color: #444; }
+        .team-row.maxed span { text-decoration: line-through; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #444; }
+        .dot.used { background: var(--danger); border-color: var(--danger); }
     </style>
 </head>
 <body>
 
     <div id="syncOverlay">
         <div class="hourglass">⏳</div>
-        <div class="sync-text">Syncing Live Standings...</div>
+        <div class="sync-text">Loading Group Standings...</div>
     </div>
 
     <nav>
-        <button class="tab-btn active" onclick="switchTab(event, 'jumbo-tab')">📊 Leaderboard</button>
-        <button class="tab-btn" onclick="switchTab(event, 'roster-tab')">📋 My Roster Tracker</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'leaderboard-tab')">📊 Leaderboard</button>
+        <button class="tab-btn" onclick="switchTab(event, 'roster-tab')">📋 Roster Tracker</button>
     </nav>
 
-    <div id="jumbo-tab" class="tab-content active">
-        <div class="jumbo-container">
-            <div class="jumbo-header"><h1>Standings</h1></div>
+    <div id="leaderboard-tab" class="tab-content active">
+        
+        <div class="group-container">
+            <div class="group-header"><h2>Group A</h2> <span style="font-size:0.7em; color:#555">Top 3 Advance</span></div>
             <table>
                 <thead>
-                    <tr>
-                        <th class="rank-col">#</th>
-                        <th>Player</th>
-                        <th class="stat-col">W</th>
-                        <th class="stat-col">D</th>
-                        <th class="stat-col">L</th>
-                        <th class="stat-col">GD</th>
-                        <th class="pts-col">PTS</th>
-                    </tr>
+                    <tr><th class="rank-col">#</th><th>Player</th><th class="stat-col">W</th><th class="stat-col">D</th><th class="stat-col">L</th><th class="stat-col">GD</th><th class="pts-col">PTS</th></tr>
                 </thead>
-                <tbody id="leaderboardBody"></tbody>
+                <tbody id="body-A"></tbody>
             </table>
-            <div style="padding:15px; font-size:0.7em; text-align:center; color:#555;">
-                <span style="color:var(--bye)">■</span> Top 2: BYE to Semi-Finals | <span style="color:var(--accent)">■</span> 3rd-6th: Quarter-Finals
-            </div>
         </div>
-        <div style="text-align:center; margin-top:20px;">
-            <button onclick="syncAllData()" style="background:transparent; color:#444; border:1px solid #333; padding:8px 16px; border-radius:5px; cursor:pointer;">🔄 LIVE REFRESH</button>
+
+        <div class="group-container">
+            <div class="group-header"><h2>Group B</h2> <span style="font-size:0.7em; color:#555">Top 3 Advance</span></div>
+            <table>
+                <thead>
+                    <tr><th class="rank-col">#</th><th>Player</th><th class="stat-col">W</th><th class="stat-col">D</th><th class="stat-col">L</th><th class="stat-col">GD</th><th class="pts-col">PTS</th></tr>
+                </thead>
+                <tbody id="body-B"></tbody>
+            </table>
+        </div>
+
+        <div style="text-align:center;">
+            <button onclick="syncAllData()" style="background:transparent; color:#444; border:1px solid #333; padding:10px 20px; border-radius:5px; cursor:pointer;">🔄 REFRESH SCORES</button>
         </div>
     </div>
 
@@ -107,9 +103,13 @@
     </div>
 
 <script>
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3WWHbE85uSIHnlYuxM_5VlK4KIzebZn2qwLH-Vu53Ic81QZbxpjMHuM9TV_RwQMuW/exec";
     const PROXY = "https://corsproxy.io/?";
+    
+    // Hardcoded Group Assignments
+    const groupA = ["Aakash", "hey.its.masalamango", "Esteban Fritz", "Amitesh Srivastava", "Dhiren Navani", "Saurabh"];
+    const groupB = ["Mufi", "Vivek Patil", "Prathamesh", "Yash Rathore", "Akshay"];
+
     let globalData = null;
 
     window.onload = function() { syncAllData(); };
@@ -131,62 +131,53 @@
             globalData = await resp.json();
             
             const sel = document.getElementById('playerSel');
-            const currentVal = sel.value;
             sel.innerHTML = '<option value="">-- SELECT YOUR NAME --</option>';
-            if (globalData.players) {
-                globalData.players.forEach(p => { if(p.name) sel.innerHTML += `<option value="${p.name}">${p.name}</option>`; });
-            }
-            sel.value = currentVal;
-            if(currentVal) renderRoster();
+            globalData.players.forEach(p => { if(p.name) sel.innerHTML += `<option value="${p.name}">${p.name}</option>`; });
 
-            renderLeaderboard();
+            renderLeaderboards();
             
             overlay.style.opacity = '0';
             setTimeout(() => { overlay.style.display = 'none'; }, 500);
         } catch (e) {
-            document.querySelector('.sync-text').innerText = "❌ Sync Error. Check URL.";
+            document.querySelector('.sync-text').innerText = "❌ Sync Error.";
         }
     }
 
-    function renderLeaderboard() {
-        let stats = {};
-        if (globalData.players) { globalData.players.forEach(p => stats[p.name] = { wins: 0, draws: 0, losses: 0, gd: 0, pts: 0 }); }
+    function renderLeaderboards() {
+        const stats = {};
+        globalData.players.forEach(p => stats[p.name] = { w:0, d:0, l:0, gd:0, pts:0 });
 
         (globalData.scores || []).slice(1).forEach(row => {
             const p1 = row[1], p2 = row[2], s1 = parseInt(row[5]), s2 = parseInt(row[6]);
-            if(p1 && p2 && !isNaN(s1) && !isNaN(s2) && stats[p1]) {
-                stats[p1].gd += (s1 - s2); stats[p2].gd += (s2 - s1);
-                if(s1 > s2) { stats[p1].wins++; stats[p1].pts += 3; stats[p2].losses++; }
-                else if(s2 > s1) { stats[p2].wins++; stats[p2].pts += 3; stats[p1].losses++; }
-                else { stats[p1].draws++; stats[p1].pts += 1; stats[p2].draws++; stats[p2].pts += 1; }
+            if(stats[p1] && stats[p2] && !isNaN(s1)) {
+                stats[p1].gd += (s1-s2); stats[p2].gd += (s2-s1);
+                if(s1 > s2) { stats[p1].w++; stats[p1].pts += 3; stats[p2].l++; }
+                else if(s2 > s1) { stats[p2].w++; stats[p2].pts += 3; stats[p1].l++; }
+                else { stats[p1].d++; stats[p1].pts += 1; stats[p2].d++; stats[p2].pts += 1; }
             }
         });
 
-        const sorted = Object.keys(stats).map(n => ({ name: n, ...stats[n] }))
-                            .sort((a,b) => b.pts - a.pts || b.gd - a.gd || b.wins - a.wins);
+        const sortFn = (a,b) => b.pts - a.pts || b.gd - a.gd || b.w - a.w;
+        const sortedA = groupA.map(n => ({ name: n, ...stats[n] })).sort(sortFn);
+        const sortedB = groupB.map(n => ({ name: n, ...stats[n] })).sort(sortFn);
 
-        const body = document.getElementById('leaderboardBody');
+        fillTable('body-A', sortedA);
+        fillTable('body-B', sortedB);
+    }
+
+    function fillTable(id, data) {
+        const body = document.getElementById(id);
         body.innerHTML = "";
-        sorted.forEach((p, i) => {
-            let rowClass = "";
-            let badge = "";
-            
-            if (i < 2) { 
-                rowClass = "qualifier-top"; 
-                badge = '<span class="badge badge-bye">BYE</span>'; 
-            } else if (i < 6) { 
-                rowClass = "qualifier-mid"; 
-                badge = '<span class="badge badge-playoffs">PLAYOFFS</span>'; 
-            }
-
+        data.forEach((p, i) => {
+            const badge = (i === 0) ? '<span class="badge badge-bye">BYE</span>' : '';
             body.innerHTML += `
-                <tr class="${rowClass}">
-                    <td class="rank-col" style="color:${i<2?'var(--gold)':'#444'}">${i + 1}</td>
-                    <td class="name-col">${p.name} ${badge}</td>
-                    <td class="stat-col">${p.wins}</td>
-                    <td class="stat-col">${p.draws}</td>
-                    <td class="stat-col">${p.losses}</td>
-                    <td class="stat-col">${p.gd > 0 ? '+' + p.gd : p.gd}</td>
+                <tr>
+                    <td class="rank-col" style="color:${i<3?'var(--accent)':'#444'}">${i+1}</td>
+                    <td>${p.name} ${badge}</td>
+                    <td class="stat-col">${p.w}</td>
+                    <td class="stat-col">${p.d}</td>
+                    <td class="stat-col">${p.l}</td>
+                    <td class="stat-col">${p.gd > 0 ? '+'+p.gd : p.gd}</td>
                     <td class="pts-col">${p.pts}</td>
                 </tr>
             `;
@@ -203,11 +194,10 @@
             if(!team) return;
             const used = (globalData.usageMap && globalData.usageMap[name] && globalData.usageMap[name][team]) || 0;
             const isMaxed = used >= 1;
-
             list.innerHTML += `
                 <div class="team-row ${isMaxed ? 'maxed' : ''}">
                     <div><span style="font-weight:bold">${team}</span><br><div class="dot ${isMaxed ? 'used' : ''}"></div></div>
-                    <div style="font-size:0.75em; font-weight:bold; color:${isMaxed?'var(--danger)':'#666'}">${isMaxed?'MAXED':'READY'}</div>
+                    <div style="font-size:0.7em; font-weight:bold; color:${isMaxed?'var(--danger)':'#555'}">${isMaxed?'UNAVAILABLE':'AVAILABLE'}</div>
                 </div>`;
         });
     }
