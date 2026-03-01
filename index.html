@@ -44,14 +44,44 @@
         
         .badge { font-size: 0.6em; padding: 3px 6px; border-radius: 3px; font-weight: bold; margin-left: 8px; }
         .badge-bye { background: var(--bye); color: white; }
+        .badge-playoff { background: var(--accent); color: black; }
+
+        /* MATCH SCORES */
+        .matches-section { max-width: 1000px; margin: 40px auto; }
+        .matches-section h2 { color: var(--gold); text-transform: uppercase; font-size: 1em; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
+        .round-label { color: var(--accent); font-weight: bold; font-size: 0.75em; text-transform: uppercase; margin: 20px 0 8px; }
+        .match-result { display: flex; align-items: center; background: #111; border: 1px solid #222; border-radius: 8px; padding: 12px 16px; margin-bottom: 6px; gap: 10px; }
+        .match-result .p-name { flex: 1; font-weight: bold; font-size: 0.85em; }
+        .match-result .p-name.left { text-align: right; }
+        .match-result .p-name.right { text-align: left; }
+        .match-result .score-box { background: #000; border: 1px solid #333; border-radius: 6px; padding: 6px 14px; font-weight: 900; font-size: 1.1em; color: var(--gold); min-width: 60px; text-align: center; }
+        .match-result .team-label { font-size: 0.65em; color: #555; }
+        .match-result .console-tag { font-size: 0.55em; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
+        .console-ps { background: #003791; color: white; }
+        .console-xbox { background: #107c10; color: white; }
+        .no-matches { color: #444; text-align: center; padding: 30px; font-style: italic; }
 
         /* ROSTER TRACKER */
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; max-width: 1200px; margin: auto; }
+        .roster-container { max-width: 1000px; margin: auto; }
+        .roster-section { margin-bottom: 30px; }
+        .roster-section h3 { color: var(--accent); text-transform: uppercase; font-size: 0.85em; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px; }
+        .roster-section h3 .count { color: #555; font-weight: normal; font-size: 0.9em; }
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
         .team-row { background: #1a1a1a; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--accent); }
         .team-row.maxed { opacity: 0.3; filter: grayscale(1); border-left-color: #444; }
         .team-row.maxed span { text-decoration: line-through; }
         .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #444; }
         .dot.used { background: var(--danger); border-color: var(--danger); }
+        .player-match { display: flex; align-items: center; background: #111; border: 1px solid #222; border-radius: 8px; padding: 12px 16px; margin-bottom: 6px; gap: 10px; }
+        .player-match .opp-name { flex: 1; font-weight: bold; font-size: 0.85em; }
+        .player-match .match-score { background: #000; border: 1px solid #333; border-radius: 6px; padding: 5px 12px; font-weight: 900; font-size: 1em; min-width: 55px; text-align: center; }
+        .player-match .match-score.win { color: var(--bye); }
+        .player-match .match-score.loss { color: var(--danger); }
+        .player-match .match-score.draw { color: var(--gold); }
+        .player-match .match-meta { font-size: 0.65em; color: #555; }
+        .remaining-match { display: flex; align-items: center; background: #0a0a0a; border: 1px dashed #333; border-radius: 8px; padding: 12px 16px; margin-bottom: 6px; gap: 10px; }
+        .remaining-match .opp-name { flex: 1; font-weight: bold; font-size: 0.85em; color: #666; }
+        .remaining-match .pending-tag { font-size: 0.7em; color: #444; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -72,7 +102,7 @@
             <div class="group-header"><h2>Group A</h2> <span style="font-size:0.7em; color:#555">Top 3 Advance</span></div>
             <table>
                 <thead>
-                    <tr><th class="rank-col">#</th><th>Player</th><th class="stat-col">W</th><th class="stat-col">D</th><th class="stat-col">L</th><th class="stat-col">GD</th><th class="pts-col">PTS</th></tr>
+                    <tr><th class="rank-col">#</th><th>Player</th><th class="stat-col">P</th><th class="stat-col">W</th><th class="stat-col">D</th><th class="stat-col">L</th><th class="stat-col">GD</th><th class="pts-col">PTS</th></tr>
                 </thead>
                 <tbody id="body-A"></tbody>
             </table>
@@ -82,11 +112,13 @@
             <div class="group-header"><h2>Group B</h2> <span style="font-size:0.7em; color:#555">Top 3 Advance</span></div>
             <table>
                 <thead>
-                    <tr><th class="rank-col">#</th><th>Player</th><th class="stat-col">W</th><th class="stat-col">D</th><th class="stat-col">L</th><th class="stat-col">GD</th><th class="pts-col">PTS</th></tr>
+                    <tr><th class="rank-col">#</th><th>Player</th><th class="stat-col">P</th><th class="stat-col">W</th><th class="stat-col">D</th><th class="stat-col">L</th><th class="stat-col">GD</th><th class="pts-col">PTS</th></tr>
                 </thead>
                 <tbody id="body-B"></tbody>
             </table>
         </div>
+
+        <div class="matches-section"><h2>⚽ Match Results</h2><div id="matchResults"></div></div>
 
         <div style="text-align:center;">
             <button onclick="syncAllData()" style="background:transparent; color:#444; border:1px solid #333; padding:10px 20px; border-radius:5px; cursor:pointer;">🔄 REFRESH SCORES</button>
@@ -98,17 +130,18 @@
             <select id="playerSel" onchange="renderRoster()" style="padding:12px; width:300px; background:#222; color:var(--gold); border-radius:8px; border:1px solid #444;">
                 <option value="">-- SELECT YOUR NAME --</option>
             </select>
+            <div id="playerStats" style="margin-top:10px; font-size:0.8em; color:#555;"></div>
         </div>
-        <div id="rosterList" class="roster-grid"></div>
+        <div class="roster-container">
+            <div class="roster-section"><h3>🏟️ Played Matches <span class="count" id="playedCount"></span></h3><div id="playedMatches"></div></div>
+            <div class="roster-section"><h3>⏳ Remaining Matches <span class="count" id="remainingCount"></span></h3><div id="remainingMatches"></div></div>
+            <div class="roster-section"><h3>👕 Team Roster <span class="count" id="rosterCount"></span></h3><div id="rosterList" class="roster-grid"></div></div>
+        </div>
     </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3WWHbE85uSIHnlYuxM_5VlK4KIzebZn2qwLH-Vu53Ic81QZbxpjMHuM9TV_RwQMuW/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBbrN4DhyWlDumTTsEfNSaD4Hjy_CyvGURidjVJSbOTIiNvegdFPCS-FMuqlu8vtj4/exec";
     const PROXY = "https://corsproxy.io/?";
-    
-    // Hardcoded Group Assignments
-    const groupA = ["Aakash", "hey.its.masalamango", "Esteban Fritz", "Amitesh Srivastava", "Dhiren Navani", "Saurabh"];
-    const groupB = ["Mufi", "Vivek Patil", "Prathamesh", "Yash Rathore", "Akshay"];
 
     let globalData = null;
 
@@ -135,6 +168,7 @@
             globalData.players.forEach(p => { if(p.name) sel.innerHTML += `<option value="${p.name}">${p.name}</option>`; });
 
             renderLeaderboards();
+            renderMatchResults();
             
             overlay.style.opacity = '0';
             setTimeout(() => { overlay.style.display = 'none'; }, 500);
@@ -144,62 +178,158 @@
     }
 
     function renderLeaderboards() {
-        const stats = {};
-        globalData.players.forEach(p => stats[p.name] = { w:0, d:0, l:0, gd:0, pts:0 });
-
-        (globalData.scores || []).slice(1).forEach(row => {
-            const p1 = row[1], p2 = row[2], s1 = parseInt(row[5]), s2 = parseInt(row[6]);
-            if(stats[p1] && stats[p2] && !isNaN(s1)) {
-                stats[p1].gd += (s1-s2); stats[p2].gd += (s2-s1);
-                if(s1 > s2) { stats[p1].w++; stats[p1].pts += 3; stats[p2].l++; }
-                else if(s2 > s1) { stats[p2].w++; stats[p2].pts += 3; stats[p1].l++; }
-                else { stats[p1].d++; stats[p1].pts += 1; stats[p2].d++; stats[p2].pts += 1; }
-            }
-        });
-
-        const sortFn = (a,b) => b.pts - a.pts || b.gd - a.gd || b.w - a.w;
-        const sortedA = groupA.map(n => ({ name: n, ...stats[n] })).sort(sortFn);
-        const sortedB = groupB.map(n => ({ name: n, ...stats[n] })).sort(sortFn);
-
-        fillTable('body-A', sortedA);
-        fillTable('body-B', sortedB);
+        // Leaderboard sheet columns: 0=Rank, 1=Player, 2=Group, 3=P, 4=W, 5=D, 6=L, 7=GD, 8=Pts
+        const lb = (globalData.leaderboard || []).slice(1);
+        fillTable('body-A', lb.filter(r => r[2] === 'A'));
+        fillTable('body-B', lb.filter(r => r[2] === 'B'));
     }
 
-    function fillTable(id, data) {
+    function fillTable(id, rows) {
         const body = document.getElementById(id);
         body.innerHTML = "";
-        data.forEach((p, i) => {
-            const badge = (i === 0) ? '<span class="badge badge-bye">BYE</span>' : '';
+        rows.forEach((r, i) => {
+            const badge = (i === 0) ? '<span class="badge badge-bye">BYE</span>'
+                        : (i <= 2) ? '<span class="badge badge-playoff">PLAYOFF</span>' : '';
+            const gd = r[7] > 0 ? '+' + r[7] : r[7];
             body.innerHTML += `
                 <tr>
-                    <td class="rank-col" style="color:${i<3?'var(--accent)':'#444'}">${i+1}</td>
-                    <td>${p.name} ${badge}</td>
-                    <td class="stat-col">${p.w}</td>
-                    <td class="stat-col">${p.d}</td>
-                    <td class="stat-col">${p.l}</td>
-                    <td class="stat-col">${p.gd > 0 ? '+'+p.gd : p.gd}</td>
-                    <td class="pts-col">${p.pts}</td>
+                    <td class="rank-col" style="color:${i < 3 ? 'var(--accent)' : '#444'}">${r[0]}</td>
+                    <td>${r[1]} ${badge}</td>
+                    <td class="stat-col">${r[3]}</td>
+                    <td class="stat-col">${r[4]}</td>
+                    <td class="stat-col">${r[5]}</td>
+                    <td class="stat-col">${r[6]}</td>
+                    <td class="stat-col">${gd}</td>
+                    <td class="pts-col">${r[8]}</td>
                 </tr>
             `;
         });
     }
 
+    function renderMatchResults() {
+        // Scores sheet columns: 0=MatchID, 1=Round, 2=Player1, 3=Player2, 4=P1Team, 5=P2Team, 6=P1Score, 7=P2Score, 8=Console, 9=Group
+        const scores = (globalData.scores || []).slice(1).filter(r => r[0]);
+        const container = document.getElementById('matchResults');
+
+        if (!scores.length) {
+            container.innerHTML = '<div class="no-matches">No matches played yet</div>';
+            return;
+        }
+
+        // Group by round
+        const rounds = {};
+        scores.forEach(r => {
+            const rd = r[1] || 'Unknown';
+            if (!rounds[rd]) rounds[rd] = [];
+            rounds[rd].push(r);
+        });
+
+        let html = '';
+        Object.keys(rounds).sort().forEach(rd => {
+            html += `<div class="round-label">🏟️ ${rd}</div>`;
+            rounds[rd].forEach(r => {
+                const consoleClass = (r[8] || '').toUpperCase().includes('XBOX') ? 'console-xbox' : 'console-ps';
+                const winner = Number(r[6]) > Number(r[7]) ? 'left' : (Number(r[7]) > Number(r[6]) ? 'right' : '');
+                html += `
+                    <div class="match-result">
+                        <div class="p-name left">${r[2]}<br><span class="team-label">${r[4]}</span></div>
+                        <div class="score-box">${r[6]} - ${r[7]}</div>
+                        <div class="p-name right">${r[3]}<br><span class="team-label">${r[5]}</span></div>
+                        <span class="console-tag ${consoleClass}">${r[8]}</span>
+                    </div>`;
+            });
+        });
+        container.innerHTML = html;
+    }
+
     function renderRoster() {
         const name = document.getElementById('playerSel').value;
-        const list = document.getElementById('rosterList'); list.innerHTML = "";
-        const player = globalData.players.find(p => p.name === name);
-        if(!player) return;
+        const list = document.getElementById('rosterList');
+        const playedDiv = document.getElementById('playedMatches');
+        const remainDiv = document.getElementById('remainingMatches');
+        const statsDiv = document.getElementById('playerStats');
+        list.innerHTML = ""; playedDiv.innerHTML = ""; remainDiv.innerHTML = ""; statsDiv.innerHTML = "";
+        document.getElementById('playedCount').textContent = '';
+        document.getElementById('remainingCount').textContent = '';
+        document.getElementById('rosterCount').textContent = '';
 
+        const player = globalData.players.find(p => p.name === name);
+        if (!player || !name) return;
+
+        // ─── PLAYED MATCHES ───
+        const scores = (globalData.scores || []).slice(1).filter(r => r[0]);
+        const played = scores.filter(r => r[2] === name || r[3] === name);
+        const playedOpponents = new Set();
+
+        if (played.length) {
+            let wins = 0, draws = 0, losses = 0;
+            played.forEach(r => {
+                const isP1 = r[2] === name;
+                const opp = isP1 ? r[3] : r[2];
+                const myScore = Number(isP1 ? r[6] : r[7]);
+                const oppScore = Number(isP1 ? r[7] : r[6]);
+                const myTeam = isP1 ? r[4] : r[5];
+                const oppTeam = isP1 ? r[5] : r[4];
+                playedOpponents.add(opp);
+
+                let resultClass = 'draw', resultLabel = 'D';
+                if (myScore > oppScore) { resultClass = 'win'; resultLabel = 'W'; wins++; }
+                else if (myScore < oppScore) { resultClass = 'loss'; resultLabel = 'L'; losses++; }
+                else { draws++; }
+
+                const consoleClass = (r[8] || '').toUpperCase().includes('XBOX') ? 'console-xbox' : 'console-ps';
+                playedDiv.innerHTML += `
+                    <div class="player-match">
+                        <div class="opp-name">vs ${opp}<br><span class="match-meta">${myTeam} vs ${oppTeam} · ${r[1]} · <span class="console-tag ${consoleClass}">${r[8]}</span></span></div>
+                        <div class="match-score ${resultClass}">${myScore} - ${oppScore}</div>
+                        <div style="font-weight:900; font-size:0.8em; color:${resultClass === 'win' ? 'var(--bye)' : resultClass === 'loss' ? 'var(--danger)' : 'var(--gold)'}">${resultLabel}</div>
+                    </div>`;
+            });
+            document.getElementById('playedCount').textContent = `(${played.length})`;
+            statsDiv.innerHTML = `<span style="color:var(--bye)">${wins}W</span> · <span style="color:var(--gold)">${draws}D</span> · <span style="color:var(--danger)">${losses}L</span> · ${wins * 3 + draws} pts`;
+        } else {
+            playedDiv.innerHTML = '<div class="no-matches">No matches played yet</div>';
+        }
+
+        // ─── REMAINING MATCHES ───
+        // Get group mates from leaderboard
+        const lb = (globalData.leaderboard || []).slice(1);
+        const playerRow = lb.find(r => r[1] === name);
+        const group = playerRow ? playerRow[2] : null;
+
+        if (group) {
+            const groupMates = lb.filter(r => r[2] === group && r[1] !== name).map(r => r[1]);
+            const remaining = groupMates.filter(opp => !playedOpponents.has(opp));
+
+            if (remaining.length) {
+                remaining.forEach(opp => {
+                    remainDiv.innerHTML += `
+                        <div class="remaining-match">
+                            <div class="opp-name">vs ${opp}</div>
+                            <div class="pending-tag">⏳ Pending</div>
+                        </div>`;
+                });
+            } else {
+                remainDiv.innerHTML = '<div class="no-matches">All group matches completed! 🎉</div>';
+            }
+            document.getElementById('remainingCount').textContent = `(${remaining.length})`;
+        }
+
+        // ─── TEAM ROSTER ───
+        let availCount = 0, usedCount = 0;
         player.teams.forEach(team => {
             if(!team) return;
-            const used = (globalData.usageMap && globalData.usageMap[name] && globalData.usageMap[name][team]) || 0;
-            const isMaxed = used >= 1;
+            const usage = (globalData.usageMap && globalData.usageMap[name] && globalData.usageMap[name][team]) || 0;
+            const isMaxed = usage >= 1;
+            if (isMaxed) usedCount++; else availCount++;
             list.innerHTML += `
                 <div class="team-row ${isMaxed ? 'maxed' : ''}">
                     <div><span style="font-weight:bold">${team}</span><br><div class="dot ${isMaxed ? 'used' : ''}"></div></div>
                     <div style="font-size:0.7em; font-weight:bold; color:${isMaxed?'var(--danger)':'#555'}">${isMaxed?'UNAVAILABLE':'AVAILABLE'}</div>
                 </div>`;
         });
+        const totalTeams = player.teams.filter(t => t).length;
+        document.getElementById('rosterCount').textContent = `(${totalTeams - played.length} available / ${totalTeams})`;
     }
 </script>
 </body>
